@@ -19,6 +19,7 @@ import io.netty.handler.codec.http.HttpRequest
 import kamon.Kamon
 import kamon.context.{Context, TextMap}
 import play.api.libs.ws.WSRequest
+import scala.collection.JavaConverters._
 
 package object instrumentation {
 
@@ -33,7 +34,7 @@ package object instrumentation {
   }
 
   private def readOnlyTextMapFromHeaders(request: HttpRequest): TextMap = new TextMap {
-    override def values: Iterator[(String, String)] = Iterator.empty
+    override def values: Iterator[(String, String)] = request.headers().iterator().asScala.map(e => (e.getKey, e.getValue))
     override def get(key: String): Option[String] = Option(request.headers().get(key))
     override def put(key: String, value: String): Unit = {}
   }
